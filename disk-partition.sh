@@ -1,66 +1,120 @@
 #!/bin/bash
 
-# 获取系统上所有磁盘列表
-echo "检测到的磁盘列表:"
-lsblk -d -n -p -o NAME,SIZE
+# 颜色代码
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+plain="\033[0m"
 
-# 让用户选择磁盘
-read -p "请输入要分区的磁盘（例如 /dev/sda）: " DISK
-if [ ! -e "$DISK" ]; then
-    echo "错误: 磁盘 $DISK 不存在，请重新运行脚本。"
-    exit 1
-fi
+# 检查是否为Root
+[[ $EUID -ne 0 ]] && echo -e "${red}错误: ${plain} 必须使用root权限运行脚本！\n" && exit 1
 
-# 获取用户选择的文件系统
-echo "支持的文件系统类型: ext4, xfs, ntfs"
-read -p "请输入你选择的文件系统类型: " FS_TYPE
+# 获取系统信息
+cname=$(awk -F: '/model name/{name=$2} END{print name}' /proc/cpuinfo | sed 's/^[ \t]*//;s/[ \t]*$//')
+cores=$(awk -F: '/model name/{core++} END{print core}' /proc/cpuinfo)
+freq=$(awk -F'[ :]' '/cpu MHz/{print $4;exit}' /proc/cpuinfo)
+tram=$(free -m | awk '/Mem/{ print $2}')
+swap=$(free -m | awk '/Swap/{ print $2}')
+up=$(awk '{a=$1/86400;b=($1%86400)/3600;c=($1%3600)/60} {printf("%d days, %d hour %d min\n",a,b,c)}' /proc/uptime)
+opsy=$(hostnamectl | sed -n '1p')
+arch=$(uname -m)
+kern=$(uname -r)
+disk_size=$(df -hPl | grep -wvE '\-|none|tmpfs|overlay|shmpnt' | awk '{print $2}' | xargs | sed 's/ /,/g')
+tcpctrl=$(sysctl net.ipv4.tcp_congestion_control | awk -F ' ' '{print $3}')
 
-# 检查文件系统类型是否支持
-if ! [[ "$FS_TYPE" =~ ^(ext4|xfs|ntfs)$ ]]; then
-    echo "错误: 不支持的文件系统类型。"
-    exit 1
-fi
+# 打印系统信息
+clear
+println() {
+    echo -e "\\n${green}$1${plain}\\n"
+}
 
-# 获取用户选择的分区数量
-read -p "请输入要创建的分区数量（1-4）: " NUM_PARTS
-if ! [[ "$NUM_PARTS" =~ ^[1-4]$ ]]; then
-    echo "错误: 只能输入1到4的数字。"
-    exit 1
-fi
+show_system_info() {
+    println "硬件信息:"
+    println " 处理器模型: $cname"
+    println " 处理器内核数: $cores"
+    println " 处理器频率: $freq MHz"
+    println " 内存总数: $tram MB"
+    println " 交换空间: $swap MB"
+    println " 已运行时间: $up"
+    println " 操作系统: $opsy"
+    println " 系统架构: $arch"
+    println " 内核版本: $kern"
+    println " 磁盘总大小: $disk_size GB"
+    println " TCP拥塞控制算法: $tcpctrl"
+}
 
-# 开始分区
-for (( i=1; i<=$NUM_PARTS; i++ ))
-do
-    # 可以添加更多的用户输入步骤，来定义每个分区的大小
-    echo "正在创建分区 $i ..."
-    # 注意，这里简化了分区过程，实际应用中可能需要更复杂的方式来处理分区大小
-    # 这里我们只是简单地创建等大小分区，且没有错误处理
-    echo -e "n\np\n\n\n\nw" | fdisk $DISK
-    # 为了确保分区表正确同步，等待几秒
-    sleep 5
+show_menu() {
+    println "请选择分区操作:"
+    echo -e " ${green}1)${plain} 查看当前分区情况"
+    echo -e " ${green}2)${plain} 创建新分区"
+    echo -e " ${green}3)${plain} 格式化分区"
+    echo -e " ${green}4)${plain} 挂载分区"
+    echo -e " ${green}5)${plain} 卸载分区"
+    echo -e " ${green}6)${plain} 设置开机自动挂载"
+    echo -e " ${green}7)${plain} 退出"
+    read -p "请输入数字 [1-7]:" choose
+}
+
+# 显示系统信息
+show_system_info
+
+while true; do
+    show_menu
+    case "$choose" in
+        1)
+            fdisk -l | grep '^Disk'
+            ;;
+        2)
+            println "请输入要创建分区的磁盘, 如 /dev/vda"
+            read -p "磁盘: " disk
+            fdisk $disk
+            println "分区创建成功!"
+            ;;
+        3)
+            println "请输入要格式化的分区, 如 /dev/vda1"
+            read -p "分区: " part
+            println "请选择文件系统类型:"
+            echo -e " ${green}1)${plain} ext4"
+            echo -e " ${green}2)${plain} xfs"
+            read -p "请输入数字 [1-2]:" fs_type
+            if [[ $fs_type == "1" ]]; then
+                mkfs.ext4 $part
+            elif [[ $fs_type == "2" ]]; then
+                mkfs.xfs -f $part
+            else
+                println "输入错误, 请重试!"
+            fi
+            println "分区格式化成功!"
+            ;;
+        4)
+            println "请输入要挂载的分区, 如 /dev/vda1"
+            read -p "分区: " part
+            println "请输入挂载点, 如 /mnt"
+            read -p "挂载点: " mnt
+            mkdir -p "$mnt"
+            mount "$part" "$mnt"
+            println "分区挂载成功!"
+            ;;
+        5)
+            println "请输入要卸载的挂载点, 如 /mnt"
+            read -p "挂载点: " mnt
+            umount "$mnt"
+            println "分区卸载成功!"
+            ;;
+        6)
+            println "请输入要开机自动挂载的分区, 如 /dev/vda1"
+            read -p "分区: " part
+            println "请输入挂载点, 如 /mnt"
+            read -p "挂载点: " mnt
+            mkdir -p "$mnt"
+            echo "$part $mnt $(blkid $part | awk '{print $3}' | sed 's/\"//g') defaults 0 0" >> /etc/fstab
+            println "已设置开机自动挂载!"
+            ;;
+        7)
+            exit 0
+            ;;
+        *)
+            println "输入错误, 请重试!"
+            ;;
+    esac
 done
-
-# 获取新创建的分区名
-PARTITIONS=$(fdisk -l $DISK | grep "^$DISK" | awk '{print $1}')
-echo "创建的分区："
-echo "$PARTITIONS"
-
-# 格式化每个新创建的分区
-for PARTITION in $PARTITIONS
-do
-    echo "正在格式化分区 $PARTITION ..."
-    mkfs -t $FS_TYPE $PARTITION
-done
-
-# 挂载分区（用户可以添加自定义挂载点和确认步骤）
-for PARTITION in $PARTITIONS
-do
-    MOUNT_POINT="/mnt$(echo $PARTITION | grep -o -E '[^/]+$')"
-    mkdir -p $MOUNT_POINT
-    mount $PARTITION $MOUNT_POINT
-    # 添加到fstab以实现开机自动挂载
-    echo "$PARTITION  $MOUNT_POINT  $FS_TYPE  defaults  0  0" | tee -a /etc/fstab
-done
-
-# 显示磁盘和挂载情况
-df -h
