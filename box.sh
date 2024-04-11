@@ -70,7 +70,7 @@ function system_tools(){
     green " 17. BBR一键管理脚本"
     green " 18. SWAP一键安装/卸载脚本"
     green " 19. F2B一键安装脚本"
-	green " 20. 磁盘分区管理工具"
+    green " 20. 磁盘分区管理工具"
     yellow " --------------------------------------------------"
     green " 0. 返回上级菜单"
     echo
@@ -149,7 +149,7 @@ function test_tools(){
     green " 10. Disk Test 硬盘&系统综合测试"
     green " 11. TubeCheck Google/Youtube CDN分配节点测试"
     green " 12. RegionRestrictionCheck 流媒体解锁测试"
-	green " 13. 磁盘性能测试"
+    green " 13. 磁盘性能测试"
     yellow " --------------------------------------------------"
     green " 0. 返回上级菜单"
     echo
@@ -192,7 +192,7 @@ function test_tools(){
 	   RegionRestrictionCheck
 	;;
 	13 )
-   disk-test
+   	   disk-test
 	;;
         0 )
             start_menu
@@ -211,8 +211,8 @@ function applications(){
     green " 1. MTP&TLS 一键脚本"
     green " 2. Rclone官方一键安装脚本" 
     green " 3. Aria2 最强安装与管理脚本"
-	green " 4. frpc 客户端管理"
-	green " 5. frps 客户端管理"
+    green " 4. frpc 客户端管理"
+    green " 5. frps 客户端管理"
     yellow " --------------------------------------------------"
     green " 0. 返回上级菜单"
     echo
@@ -228,10 +228,10 @@ function applications(){
            aria
 	;;
 	4 )
-		   frpc-manage
+	   frpc-manage
 	;;
 	5 )
-		   frps-manage
+	   frps-manage
 	;;
         0 )
             start_menu
