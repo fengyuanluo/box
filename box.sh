@@ -1,4 +1,6 @@
 #! /bin/bash
+# By 洛风缘
+#https://github.com/fengyuanluo/box
 
 #彩色
 red(){
@@ -18,7 +20,8 @@ blue(){
 function start_menu(){
     clear
     red "洛风缘的懒人工具箱" 
-
+    green " FROM: https://github.com/fengyuanluo/box "
+    green " USE:  wget -O box.sh https://raw.githubusercontent.com/fengyuanluo/box/main/box.sh && chmod +x box.sh && clear && ./box.sh "
     yellow " =================================================="
     green " 1. 系统工具"
     green " 2. 测试工具"
@@ -67,6 +70,7 @@ function system_tools(){
     green " 17. BBR一键管理脚本"
     green " 18. SWAP一键安装/卸载脚本"
     green " 19. F2B一键安装脚本"
+	green " 20. 磁盘分区管理工具"
     yellow " --------------------------------------------------"
     green " 0. 返回上级菜单"
     echo
@@ -117,6 +121,9 @@ function system_tools(){
 	19 )
            f2bsh
 	;;
+	20 )
+			disk-partition
+	;;
         0 )
             start_menu
         ;;
@@ -142,6 +149,7 @@ function test_tools(){
     green " 10. Disk Test 硬盘&系统综合测试"
     green " 11. TubeCheck Google/Youtube CDN分配节点测试"
     green " 12. RegionRestrictionCheck 流媒体解锁测试"
+	green " 13. 磁盘性能测试"
     yellow " --------------------------------------------------"
     green " 0. 返回上级菜单"
     echo
@@ -183,6 +191,9 @@ function test_tools(){
 	12 )
 	   RegionRestrictionCheck
 	;;
+	13 )
+   disk-test
+	;;
         0 )
             start_menu
         ;;
@@ -200,6 +211,8 @@ function applications(){
     green " 1. MTP&TLS 一键脚本"
     green " 2. Rclone官方一键安装脚本" 
     green " 3. Aria2 最强安装与管理脚本"
+	green " 4. frpc 客户端管理"
+	green " 5. frps 客户端管理"
     yellow " --------------------------------------------------"
     green " 0. 返回上级菜单"
     echo
@@ -213,6 +226,12 @@ function applications(){
 	;;
         3 )
            aria
+	;;
+	4 )
+		   frpc-manage
+	;;
+	5 )
+		   frps-manage
 	;;
         0 )
             start_menu
@@ -435,6 +454,36 @@ curl https://rclone.org/install.sh | sudo bash
 #Aria2脚本
 function aria(){
 wget -N --no-check-certificate https://raw.githubusercontent.com/BlueSkyXN/TURN/main/Aria2.sh && chmod +x Aria2.sh && ./Aria2.sh
+}
+
+function disk-partition(){
+    wget -O "/root/disk-partition.sh" "https://raw.githubusercontent.com/fengyuanluo/box/main/disk-partition.sh" --no-check-certificate -T 30 -t 5 -d
+    chmod +x "/root/disk-partition.sh"
+    chmod 777 "/root/disk-partition.sh"
+    blue "下载完成"
+	bash /root/disk-partition.sh
+#   blue "输入 bash /root/disk-partition.sh 来运行"
+}
+
+function disk-test(){
+    wget -O "/root/disk-test.sh" "https://raw.githubusercontent.com/fengyuanluo/box/main/disk-test.sh" --no-check-certificate -T 30 -t 5 -d
+    chmod +x "/root/disk-test.sh"
+    "/root/disk-test.sh"
+    rm -f "/root/disk-test.sh"
+}
+
+function frpc-manage(){
+    wget -O "/root/frpc.sh" "https://raw.githubusercontent.com/fengyuanluo/box/main/frpc.sh" --no-check-certificate -T 30 -t 5 -d
+    chmod +x "/root/frpc.sh"
+    "/root/frpc.sh"
+    rm -f "/root/frpc.sh"
+}
+
+function frps-manage(){
+    wget -O "/root/frps.sh" "https://raw.githubusercontent.com/fengyuanluo/box/main/frps.sh" --no-check-certificate -T 30 -t 5 -d
+    chmod +x "/root/frps.sh"
+    "/root/frps.sh"
+    rm -f "/root/frps.sh"
 }
 
 start_menu
