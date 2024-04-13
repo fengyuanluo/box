@@ -222,6 +222,7 @@
 		green " 8. Alist 安装"
 		green " 9. CasaOS 安装"
 		green " 10. 小雅全家桶 安装"
+		green " 11. rclone备份工具 安装"
 		yellow " --------------------------------------------------"
 		green " 0. 返回上级菜单"
 		echo
@@ -256,6 +257,9 @@
     ;;
 		10 )
            xiaoya_install
+    ;;
+	10 )
+           rclone-backup_install
     ;;
 		
 			0 )
@@ -548,5 +552,14 @@
     bash -c "$(curl -sLk https://ddsrem.com/xiaoya_install.sh)"
     blue "小雅全家桶安装完成。"
 }
+
+	function rclone-backup_install(){
+    blue "正在下载并执行rclone备份工具安装脚本..."
+    bash <(curl -s https://raw.githubusercontent.com/fengyuanluo/box/main/rclone%E5%A4%87%E4%BB%BD/rclone-backup.sh)
+    blue "rclone备份工具安装完成。"
+}
+
+
+
 
 	start_menu
