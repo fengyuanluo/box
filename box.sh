@@ -555,7 +555,7 @@
 
 	function rclone-backup_install(){
     blue "正在下载并执行rclone备份工具安装脚本..."
-    bash <(curl -s https://raw.githubusercontent.com/fengyuanluo/box/main/rclone%E5%A4%87%E4%BB%BD/rclone-backup.sh)
+    bash <(curl -s https://raw.githubusercontent.com/fengyuanluo/box/main/rclone-backup.sh)
     blue "rclone备份工具安装完成。"
 }
 
