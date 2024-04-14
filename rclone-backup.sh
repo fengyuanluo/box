@@ -32,10 +32,11 @@ install_rclone_backup_scripts() {
     fi
 
     echo "Downloading backup.py..."
-    curl -O https://raw.githubusercontent.com/fengyuanluo/box/main/rclone%E5%A4%87%E4%BB%BD/backup.py -o "$script_path/backup.py"
-
+    curl https://raw.githubusercontent.com/fengyuanluo/box/main/rclone%E5%A4%87%E4%BB%BD/backup.py -o "$script_path/backup.py"
+    chmod +x $script_path/backup.py
     echo "Downloading manage.py..."
-    curl -O https://raw.githubusercontent.com/fengyuanluo/box/main/rclone%E5%A4%87%E4%BB%BD/manage.py -o "$script_path/manage.py"
+    curl https://raw.githubusercontent.com/fengyuanluo/box/main/rclone%E5%A4%87%E4%BB%BD/manage.py -o "$script_path/manage.py"
+    chmod +x $script_path/manage.py
 }
 
 set_cron_job() {
