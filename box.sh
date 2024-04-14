@@ -258,7 +258,7 @@
 		10 )
            xiaoya_install
     ;;
-	10 )
+	11 )
            rclone-backup_install
     ;;
 		
