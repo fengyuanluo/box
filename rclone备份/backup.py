@@ -6,8 +6,8 @@ import datetime
 import subprocess
 import tempfile
 import requests
-os.environ['HTTP_PROXY'] = 'http://127.0.0.1:20171'
-os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:20171'
+#os.environ['HTTP_PROXY'] = 'http://127.0.0.1:20171'
+#os.environ['HTTPS_PROXY'] = 'http://127.0.0.1:20171'
 
 
 def load_tasks():
