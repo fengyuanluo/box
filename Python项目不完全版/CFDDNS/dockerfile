@@ -1,18 +1,26 @@
-# 使用Python作为基础镜像
-FROM python:3.9-slim
+# 使用 Alpine Linux 作为基础镜像
+FROM alpine:3.14
 
 # 设置工作目录
 WORKDIR /root/cfddns
 
-# 安装所需的Python依赖和其他必要的工具，下载并解压CloudflareSpeedTest包，下载CFDDNS.py脚本，安装cron，并添加定时任务
-RUN apt-get update && \
-    apt-get install -y wget tar cron && \
-    pip install requests tencentcloud-sdk-python && \
-    wget https://raw.githubusercontent.com/fengyuanluo/box/main/Python%E9%A1%B9%E7%9B%AE%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%89%88/CFDDNS/download_cfddns.sh -O /tmp/download_cfddns.sh && \
+# 安装所需的依赖
+RUN apk update && \
+    apk add --no-cache \
+    python3 \
+    py3-pip \
+    wget \
+    tar \
+    dcron \
+    tzdata && \
+    pip3 install --no-cache-dir requests tencentcloud-sdk-python
+
+# 下载并解压 CloudflareSpeedTest 包，下载 CFDDNS.py 脚本
+RUN wget https://raw.githubusercontent.com/fengyuanluo/box/main/Python%E9%A1%B9%E7%9B%AE%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%89%88/CFDDNS/download_cfddns.sh -O /tmp/download_cfddns.sh && \
     sh /tmp/download_cfddns.sh && \
     rm /tmp/download_cfddns.sh && \
     wget https://raw.githubusercontent.com/fengyuanluo/box/main/Python%E9%A1%B9%E7%9B%AE%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%89%88/CFDDNS/CFDDNS.py -O /root/cfddns/CFDDNS.py && \
-    echo "*/20 * * * * cd /root/cfddns && python CFDDNS.py" >> /etc/crontab
+    echo "*/20 * * * * cd /root/cfddns && python3 CFDDNS.py" >> /etc/crontabs/root
 
-# 启动cron服务
-CMD ["cron", "-f"]
+# 启动 cron 服务
+CMD ["crond", "-f", "-d", "8"]
