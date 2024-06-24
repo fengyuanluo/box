@@ -33,4 +33,4 @@ jobs:
           context: https://raw.githubusercontent.com/fengyuanluo/box/main/Python%E9%A1%B9%E7%9B%AE%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%89%88/CFDDNS/dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: luofengyuan/cfddns:0.01
+          tags: luofengyuan/cfddns:latest
