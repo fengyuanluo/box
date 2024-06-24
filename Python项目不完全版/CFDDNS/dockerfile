@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     tar \
     cron \
+    nano \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install requests tencentcloud-sdk-python \
@@ -18,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     && sh /tmp/download_cfddns.sh \
     && rm /tmp/download_cfddns.sh \
     && wget https://raw.githubusercontent.com/fengyuanluo/box/main/Python%E9%A1%B9%E7%9B%AE%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%89%88/CFDDNS/CFDDNS.py -O /root/cfddns/CFDDNS.py \
-    && echo "*/20 * * * * cd /root/cfddns && python3 CFDDNS.py" >> /etc/crontab
+    && (crontab -l 2>/dev/null; echo "*/20 * * * * cd /root/cfddns && python3 CFDDNS.py") | crontab -
 
 # 启动 cron 服务
 CMD ["cron", "-f"]
