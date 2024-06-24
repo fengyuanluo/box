@@ -1,0 +1,18 @@
+# 使用Python作为基础镜像
+FROM docker.dust.us.kg/library/python:3.9-slim
+
+# 设置工作目录
+WORKDIR /root/cfddns
+
+# 安装所需的Python依赖和其他必要的工具，下载并解压CloudflareSpeedTest包，下载CFDDNS.py脚本，安装cron，并添加定时任务
+RUN apt-get update && \
+    apt-get install -y wget tar cron && \
+    pip install requests tencentcloud-sdk-python && \
+    wget https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_arm64.tar.gz -O /tmp/cfddns.tar.gz && \
+    tar -zxf /tmp/cfddns.tar.gz -C /root/cfddns && \
+    rm /tmp/cfddns.tar.gz && \
+    wget https://raw.githubusercontent.com/fengyuanluo/box/main/Python%E9%A1%B9%E7%9B%AE%E4%B8%8D%E5%AE%8C%E5%85%A8%E7%89%88/CFDDNS/CFDDNS.py -O /root/cfddns/CFDDNS.py && \
+    echo "*/20 * * * * cd /root/cfddns && python CFDDNS.py" >> /etc/crontab
+
+# 启动cron服务
+CMD ["cron", "-f"]

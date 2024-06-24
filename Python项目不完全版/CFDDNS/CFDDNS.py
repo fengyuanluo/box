@@ -80,7 +80,7 @@ logging.info("解析域名结果: 主域名=%s, 子域名=%s", main_domain, sub_
 def get_fastest_ipv6():
     try:
         logging.info("开始获取最快IPv6地址")
-        result = subprocess.run(['./CloudflareST', '-f', 'ip.txt', '-n', '800', '-o', 'result.csv', '-t', '6', '-dn', '3'], capture_output=True, text=True, timeout=120)
+        result = subprocess.run(['./CloudflareST', '-f', 'ipv6.txt', '-n', '800', '-o', 'result.csv', '-t', '6', '-dn', '3'], capture_output=True, text=True, timeout=120)
         logging.debug("CloudflareST 返回码: %s", result.returncode)
         logging.debug("CloudflareST 输出: %s", result.stdout)
         logging.debug("CloudflareST 错误输出: %s", result.stderr)
