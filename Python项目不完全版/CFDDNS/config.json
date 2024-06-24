@@ -1,0 +1,9 @@
+{
+    "domain": "a.c.com",
+    "dnspod_secretid": "your_secret_id",
+    "dnspod_secretkey": "your_secret_key",
+    "modify_a_record": true,
+    "modify_aaaa_record": true,
+    "a_record_line": "默认",
+    "aaaa_record_line": "电信"
+}
