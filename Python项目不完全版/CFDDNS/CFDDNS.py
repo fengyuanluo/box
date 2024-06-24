@@ -123,18 +123,18 @@ if not visa_ipv4:
 # 获取记录ID
 def get_record_id(record_type, record_line):
     try:
-        req = models.DescribeRecordFilterListRequest()
+        req = models.DescribeRecordListRequest()
         params = {
             "Domain": main_domain,
-            "SubDomain": sub_domain,
-            "RecordType": [record_type],
-            "RecordLine": [record_line],
-            "Action": "DescribeRecordFilterList",
+            "Subdomain": sub_domain,
+            "RecordType": record_type,
+            "RecordLine": record_line,
+            "Action": "DescribeRecordList",
             "Version": "2021-03-23"
         }
         req.from_json_string(json.dumps(params))
-        resp = client.DescribeRecordFilterList(req)
-        logging.debug("DescribeRecordFilterList 响应: %s", resp.to_json_string())
+        resp = client.DescribeRecordList(req)
+        logging.debug("DescribeRecordList 响应: %s", resp.to_json_string())
         for record in resp.RecordList:
             if record.Type == record_type and record.Name == sub_domain and record.Line == record_line:
                 return record.RecordId
@@ -191,14 +191,18 @@ def create_record(record_type, ip, record_line):
         return None
 
 if modify_a_record:
-    response = modify_record('A', visa_ipv4, a_record_line)
-    if not response:
+    record_id = get_record_id('A', a_record_line)
+    if record_id:
+        response = modify_record('A', visa_ipv4, a_record_line)
+    else:
         response = create_record('A', visa_ipv4, a_record_line)
     logging.info("修改或创建A记录结果: %s", response)
 
 if modify_aaaa_record:
-    response = modify_record('AAAA', fastest_ipv6, aaaa_record_line)
-    if not response:
+    record_id = get_record_id('AAAA', aaaa_record_line)
+    if record_id:
+        response = modify_record('AAAA', fastest_ipv6, aaaa_record_line)
+    else:
         response = create_record('AAAA', fastest_ipv6, aaaa_record_line)
     logging.info("修改或创建AAAA记录结果: %s", response)
 
