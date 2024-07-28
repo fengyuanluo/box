@@ -220,7 +220,7 @@ check_mtu() {
 
 # 检查适合 VPS 的最佳 Endpoint IP 地址
 check_endpoint() {
-    yellow "正在检测并设置最佳 IPv6 Endpoint IP，请稍等，大约需要 1-2 分钟..."
+    yellow "正在检测并设置最佳 Endpoint IP，请稍等，大约需要 1-2 分钟..."
 
     # 下载优选工具软件，感谢某匿名网友的分享的优选工具
     wget https://gitlab.com/Misaka-blog/warp-script/-/raw/main/files/warp-yxip/warp-linux-$(archAffix) -O warp >/dev/null 2>&1
@@ -234,8 +234,12 @@ check_endpoint() {
     # 给 Endpoint IP 优选工具赋予权限
     chmod +x warp
 
-    # 启动 WARP Endpoint IP 优选工具，只检查 IPv6
-    ./warp -ipv6
+    # 启动 WARP Endpoint IP 优选工具
+    if [[ -n $ipv4 ]]; then
+        ./warp -ipv6
+    else
+        ./warp -ipv6
+    fi
 
     # 将 result.csv 文件的优选 Endpoint IP 提取出来，放置到 best_endpoint 变量中备用
     best_endpoint=$(cat result.csv | sed -n 2p | awk -F ',' '{print $1}')
@@ -246,14 +250,18 @@ check_endpoint() {
         # 检查 VPS 的出站 IP 情况
         check_ip
 
-        # 使用 IPv6 的默认 Endpoint IP
-        best_endpoint="[2606:4700:4700::1111]:2408"
+        # 如未有 IPv4 则使用 IPv6 的 Endpoint IP，如有 IPv4 则使用 IPv4 Endpoint IP
+        if [[ -z $ipv4 ]]; then
+            best_endpoint="[2606:4700:4700::1111]:2408"
+        else
+            best_endpoint="162.159.193.10:2408"
+        fi
     fi
 
     # 删除 WARP Endpoint IP 优选工具及其附属文件
     rm -f warp result.csv
 
-    green "最佳 IPv6 Endpoint IP = $best_endpoint 已设置完毕！"
+    green "最佳 Endpoint IP = $best_endpoint 已设置完毕！"
 }
 
 # 选择 WGCF 安装 / 切换模式
