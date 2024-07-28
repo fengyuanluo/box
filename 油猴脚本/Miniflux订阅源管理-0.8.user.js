@@ -3,10 +3,10 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.8
 // @description  为每个订阅源添加勾选框，并在页面上方生成“删除”“全部标为已读”“编辑”“全选”“一键勾选错误订阅源”五个点击栏。删除时自动点击确认按钮，并美化按钮样式。同时删除指定的元素，并在订阅页面自动展开高级选项并勾选“Fetch Full Content”。
-// @author       YZFly
-// @match        http://my.599520.xyz:8889/feeds
-// @match        http://my.599520.xyz:8889/category/*/feeds
-// @match        http://my.599520.xyz:8889/subscribe
+// @author       Luofengyuan
+// @match        http://域名/feeds
+// @match        http://域名/category/*/feeds
+// @match        http://域名/subscribe
 // @grant        none
 // ==/UserScript==
 
